@@ -28,7 +28,7 @@ Smart Chessboard replaces manual move tracking with real-time, automatic detecti
 | Control lines | Shared A/B/C select lines (GPIO 18/19/21) |
 | ADC input | ADC1-only pins (GPIO 32–39), avoids BLE/ADC2 conflict |
 | Piece ID method | Voltage divider with 12 distinct resistor values (1kΩ–68kΩ) |
-| LED control | 74HC595 shift registers |
+| LED control | RGB Adressable |
 
 ### 📸 Hardware Photos
 

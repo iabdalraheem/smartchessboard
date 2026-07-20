@@ -78,10 +78,10 @@ smart-chessboard/
 
 | Name | Role | Contact |
 |---|---|---|
-| Raheem | Hardware & Firmware | [LinkedIn](#) <!-- replace # with your link --> |
-| Abdullah Taweel | — | LinkedIn *(coming soon)* |
-| Amro Qadi Riha | — | LinkedIn *(coming soon)* |
-
+| Raheem | Frimware & App | [LinkedIn](#) <!-- replace # with your link --> |
+| Abdullah Taweel | HardWare | LinkedIn *(coming soon)* |
+| Amro Qadi Riha | Hardware | LinkedIn *(coming soon)* |
+| Sedra Zrek | Hardware | LinkedIn *(coming soon)* |
 Supervised by **Eng. Heba Kharma**
 
 ## 📄 License

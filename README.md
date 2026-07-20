@@ -31,6 +31,13 @@ Smart Chessboard replaces manual move tracking with real-time, automatic detecti
 | LED control | RGB Adressable |
 
 ### 📸 Hardware Photos
+<img width="100" height="244" alt="WhatsApp Image 2026-07-20 at 2 30 08 PM" src="https://github.com/user-attachments/assets/6ff2f65d-c128-40cc-a990-83503c81ff35" />
+
+### 📸 FlowCHart
+<img width="100" height="244" alt="WhatsApp Image 2026-07-20 at 2 24 40 PM" src="https://github.com/user-attachments/assets/21742d76-b484-4220-9916-6d221ae49997" />
+
+
+
 
 <!-- Add photos once uploaded to /docs/images/ -->
 <!-- ![Board Overview](docs/images/board-overview.jpg) -->
@@ -50,6 +57,16 @@ Smart Chessboard replaces manual move tracking with real-time, automatic detecti
 **App source code:** [Final-app repository](https://github.com/iabdalraheem/Final-app)
 
 **Try the app:** [Download from Google Drive](#) <!-- replace # with your Drive link -->
+
+### 📸 App ScreenShots
+
+<img width="100" height="200" alt="WhatsApp Image 2026-07-20 at 2 23 50 PM" src="https://github.com/user-attachments/assets/a2d5b2a9-8cec-4247-aa5a-0eec5e218cf6" />
+<img width="100" height="200" alt="WhatsApp Image 2026-07-20 at 2 23 50 PM" src="https://github.com/user-attachments/assets/af4241f6-c3a2-4ba2-8023-b96789d7ffca" />
+<img width="100" height="200" alt="WhatsApp Image 2026-07-20 at 2 44 26 PM" src="https://github.com/user-attachments/assets/8e3dc8c2-9a66-4c30-9178-81b258bca211" />
+
+
+
+
 
 ## 📂 Repository Structure
 
@@ -78,12 +95,14 @@ smart-chessboard/
 
 | Name | Role | Contact |
 |---|---|---|
-| Raheem | Frimware & App | [LinkedIn](#) <!-- replace # with your link --> |
+| Abdalraheem Alzaeem | Frimware & App | [LinkedIn](#) <!-- replace # with your link --> |
 | Abdullah Taweel | HardWare | LinkedIn *(coming soon)* |
 | Amro Qadi Riha | Hardware | LinkedIn *(coming soon)* |
 | Sedra Zrek | Hardware | LinkedIn *(coming soon)* |
 Supervised by **Eng. Heba Kharma**
+## 📄 Final
 
-## 📄 License
 
-*(Add your preferred license here — MIT, Apache 2.0, etc.)*
+<img width="500" height="207" alt="WhatsApp Image 2026-07-20 at 3 04 18 PM (1)" src="https://github.com/user-attachments/assets/a3f671d7-b6c2-4ae8-ab76-411a6769bcd6" />
+<img width="600" height="360" alt="WhatsApp Image 2026-07-15 at 11 25 58 PM" src="https://github.com/user-attachments/assets/2a8a4a8a-616e-4b5f-80d6-1ed0b81ab295" />
+

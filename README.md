@@ -43,8 +43,6 @@ Smart Chessboard replaces manual move tracking with real-time, automatic detecti
 <!-- ![Board Overview](docs/images/board-overview.jpg) -->
 <!-- ![Circuit Detail](docs/images/circuit-detail.jpg) -->
 
-*(Photos coming soon)*
-
 ## 📱 App
 
 - **Language:** Kotlin

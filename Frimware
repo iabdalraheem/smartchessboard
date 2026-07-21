@@ -1,0 +1,204 @@
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
+
+// ════════════════════════════════════════════════════════════
+// UUIDs
+// ════════════════════════════════════════════════════════════
+#define SERVICE_UUID  "12345678-1234-1234-1234-123456789abc"
+#define CHAR_UUID_TX  "12345678-1234-1234-1234-123456789ab1"
+
+// ════════════════════════════════════════════════════════════
+// أبن التحكم المشتركة
+// ════════════════════════════════════════════════════════════
+#define MUX_A  12
+#define MUX_B  13
+#define MUX_C  14
+
+// ════════════════════════════════════════════════════════════
+// تعريف المبدلات
+// MUX_a → GPIO32 → عمود a
+// MUX_b → GPIO33 → عمود b
+// MUX_c → GPIO34 → عمود c
+// MUX_d → GPIO35 → عمود d
+// MUX_e → GPIO36 → عمود e
+// MUX_f → GPIO37 → عمود f
+// MUX_g → GPIO38 → عمود g
+// MUX_h → GPIO39 → عمود h
+// ════════════════════════════════════════════════════════════
+#define MUX_a  32
+#define MUX_b  33
+#define MUX_c  34
+#define MUX_d  35
+#define MUX_e  36
+#define MUX_f  37
+#define MUX_g  38
+#define MUX_h  39
+
+const int  MUX_PINS[8] = {MUX_a, MUX_b, MUX_c, MUX_d, MUX_e, MUX_f, MUX_g, MUX_h};
+const char MUX_COLS[8] = {  'a',   'b',   'c',   'd',   'e',   'f',   'g',   'h'};
+
+// ════════════════════════════════════════════════════════════
+// جدول القطع
+// ════════════════════════════════════════════════════════════
+struct PieceRange { int low, high; const char* piece; };
+
+const PieceRange RANGES[] = {
+  {300,  450,  "wp"}, {460,  620,  "bp"},
+  {650,  820,  "wn"}, {900,  1100, "bn"},
+  {1150, 1450, "wb"}, {1500, 1800, "bb"},
+  {1900, 2200, "wr"}, {2300, 2600, "br"},
+  {2650, 2950, "wq"}, {3000, 3280, "bq"},
+  {3290, 3500, "wk"}, {3510, 3700, "bk"},
+};
+const int RANGES_COUNT = 12;
+
+// ════════════════════════════════════════════════════════════
+// BLE
+// ════════════════════════════════════════════════════════════
+BLEServer*         pServer           = nullptr;
+BLECharacteristic* pTxCharacteristic = nullptr;
+bool               deviceConnected   = false;
+
+// ════════════════════════════════════════════════════════════
+// دوال مساعدة
+// ════════════════════════════════════════════════════════════
+
+// تحديد القطعة من قيمة ADC
+const char* identifyPiece(int adc) {
+  if (adc > 3700) return "empty";
+  for (int i = 0; i < RANGES_COUNT; i++)
+    if (adc >= RANGES[i].low && adc <= RANGES[i].high)
+      return RANGES[i].piece;
+  return "??";
+}
+
+// قراءة ADC مع فلتر — يشيل أعلى وأدنى قيمة ويعمل متوسط للباقي
+int readADC(int gpio) {
+  const int SAMPLES = 16;
+  int readings[SAMPLES];
+
+  // جمع القراءات
+  for (int i = 0; i < SAMPLES; i++) {
+    readings[i] = analogRead(gpio);
+    delayMicroseconds(50);
+  }
+
+  // ترتيب القراءات (bubble sort)
+  for (int i = 0; i < SAMPLES - 1; i++)
+    for (int j = 0; j < SAMPLES - i - 1; j++)
+      if (readings[j] > readings[j+1]) {
+        int tmp    = readings[j];
+        readings[j]   = readings[j+1];
+        readings[j+1] = tmp;
+      }
+
+  // شيل أعلى 4 وأدنى 4، متوسط الـ 8 الوسط
+  int sum = 0;
+  for (int i = 4; i < 12; i++) sum += readings[i];
+  return sum / 8;
+}
+
+// فتح قناة على كل المبدلات
+void selectChannel(int ch) {
+  digitalWrite(MUX_A, (ch >> 0) & 1);
+  digitalWrite(MUX_B, (ch >> 1) & 1);
+  digitalWrite(MUX_C, (ch >> 2) & 1);
+  delayMicroseconds(10);
+}
+
+// ════════════════════════════════════════════════════════════
+// المسح التسلسلي — من a إلى h، من قناة 0 إلى 7
+// ════════════════════════════════════════════════════════════
+void scanAndSend() {
+
+  for (int col = 0; col < 8; col++) {
+    for (int row = 0; row < 8; row++) {
+
+      // فتح القناة
+      selectChannel(row);
+
+      // قراءة مع فلتر
+      int adcVal = readADC(MUX_PINS[col]);
+
+      // تحديد القطعة
+      const char* piece = identifyPiece(adcVal);
+
+      // اسم الخانة
+      String square = "";
+      square += MUX_COLS[col];
+      square += String(row + 1);
+
+      // طباعة السريال
+      Serial.print(square);
+      Serial.print(" = ");
+      Serial.print(adcVal);
+      Serial.print(" → ");
+      Serial.println(piece);
+
+      // إرسال BLE
+      if (deviceConnected) {
+        String msg = square + ":" + piece;
+        pTxCharacteristic->setValue(msg.c_str());
+        pTxCharacteristic->notify();
+        delay(10);
+      }
+    }
+  }
+  Serial.println("────────────────");
+}
+
+// ════════════════════════════════════════════════════════════
+// BLE Callbacks
+// ════════════════════════════════════════════════════════════
+class MyServerCallbacks : public BLEServerCallbacks {
+  void onConnect(BLEServer* pServer) override {
+    deviceConnected = true;
+    Serial.println("BLE: connected");
+  }
+  void onDisconnect(BLEServer* pServer) override {
+    deviceConnected = false;
+    Serial.println("BLE: disconnected");
+    pServer->getAdvertising()->start();
+  }
+};
+
+// ════════════════════════════════════════════════════════════
+// Setup
+// ════════════════════════════════════════════════════════════
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(MUX_A, OUTPUT);
+  pinMode(MUX_B, OUTPUT);
+  pinMode(MUX_C, OUTPUT);
+  analogReadResolution(12);
+
+  BLEDevice::init("SmartChessboard");
+  pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  BLEService* pService = pServer->createService(SERVICE_UUID);
+
+  pTxCharacteristic = pService->createCharacteristic(
+    CHAR_UUID_TX, BLECharacteristic::PROPERTY_NOTIFY);
+  pTxCharacteristic->addDescriptor(new BLE2902());
+
+  pService->start();
+  pServer->getAdvertising()->start();
+
+  Serial.println("BLE ready — SmartChessboard");
+}
+
+// ════════════════════════════════════════════════════════════
+// Loop — مسح كل ثانية
+// ════════════════════════════════════════════════════════════
+unsigned long lastScan = 0;
+
+void loop() {
+  if (millis() - lastScan >= 1000) {
+    lastScan = millis();
+    scanAndSend();
+  }
+}
